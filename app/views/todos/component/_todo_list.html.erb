@@ -1,0 +1,5 @@
+<div id="todos" class="max-h-86 overflow-y-auto rounded-lg bg-white/50 backdrop-blur-sm p-4 shadow-inner">
+  <% @todos.each do |todo| %>
+    <%= render partial: "todos/component/todo", locals: { todo: todo } %>
+  <% end %>
+</div>

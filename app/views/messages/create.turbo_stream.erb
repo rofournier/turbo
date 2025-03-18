@@ -1,0 +1,3 @@
+<%= turbo_stream.replace "message_form" do %>
+  <%= render partial: "messages/component/input_form", locals: { message: Message.new } %>
+<% end %>

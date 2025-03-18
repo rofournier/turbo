@@ -1,0 +1,5 @@
+<div id="messages" class="p-2">
+  <% @messages&.each do |message| %>
+    <%= render "messages/component/message", message: message %>
+  <% end %>
+</div>

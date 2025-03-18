@@ -1,0 +1,3 @@
+<%= turbo_stream.replace "todo_form" do %>
+  <%= render partial: "todos/component/todo_form", locals: { todo: Todo.new } %>
+<% end %>

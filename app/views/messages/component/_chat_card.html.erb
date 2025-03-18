@@ -1,0 +1,12 @@
+<%= render layout: "shared/card" do %>
+  <div class="flex flex-col h-full justify-between" data-controller="chat">
+    <%= turbo_stream_from "chat" %>
+
+    <div class="flex-grow-1 overflow-auto mb-3">
+      <%= render partial: "messages/component/messages", locals: { messages: @messages } %>
+    </div>
+    <div class="mt-auto">
+      <%= render partial: "messages/component/input_form" %>
+    </div>
+  </div>
+<% end %>
