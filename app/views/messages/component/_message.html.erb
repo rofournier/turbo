@@ -1,6 +1,12 @@
-<div id="<%= dom_id(message) %>" class="flex items-center space-x-2">
+<div id="<%= dom_id(message) %>" class="flex flex-col space-y-1 mb-2">
   <div class="flex items-center space-x-2">
     <span class="font-semibold"><%= message.sender %></span>
+    <span class="text-gray-500 text-sm mt-1"><%= message.created_at.strftime("%H:%M") %></span>
   </div>
-  <span><%= message.body %></span>
+  <div class="flex items-center space-x-2">
+    <div class="bg-gray-200 rounded-lg p-2">
+      <span><%= message.body %></span>
+    </div>
+  </div>
 </div>
+<hr class="border-t border-gray-300 my-4">

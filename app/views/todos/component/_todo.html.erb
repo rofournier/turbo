@@ -1,4 +1,4 @@
-<div id="<%= dom_id(todo) %>" class="<%= todo.done ? 'bg-green-50/80' : 'bg-white/80' %> border border-gray-200 rounded-lg p-3 mb-2 flex items-center justify-between transition-all duration-200">
+<div id="<%= dom_id(todo) %>" class="<%= todo.done ? 'bg-green-50/60' : 'bg-white/50' %> backdrop-filter backdrop-blur-sm border border-white/40 rounded-lg p-3 mb-2 flex items-center justify-between transition-all duration-200">
   <span class="<%= todo.done ? 'line-through text-gray-500' : 'text-gray-800' %> flex-grow">
     <%= todo.name %>
   </span>

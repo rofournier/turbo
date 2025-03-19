@@ -1,0 +1,9 @@
+<% if !@running_task.nil? %>
+  <%= turbo_stream.replace dom_id(@running_task) do %>
+    <%= render partial: "tasks/component/task", locals: { task: @running_task } %>
+  <% end %>
+<% end %>
+
+<%= turbo_stream.replace dom_id(@task) do %>
+  <%= render partial: "tasks/component/task", locals: { task: @task } %>
+<% end %>

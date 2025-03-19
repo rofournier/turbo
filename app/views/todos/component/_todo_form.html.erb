@@ -1,6 +1,6 @@
-<%= form_with model: todo, id: "todo_form", class: "mt-6", data: { turbo: true } do |form| %>
-  <div class="mb-4 flex items-center">
-    <%= form.text_field :name, placeholder: "...", class: "flex-grow px-4 py-2 rounded-l-lg border border-gray-300 focus:border-transparent" %>
+<%= form_with model: todo, id: "todo_form", class: "", data: { turbo: true } do |form| %>
+  <div class="flex items-center">
+    <%= form.text_field :name, placeholder: "New Todo", class: "flex-grow px-4 py-2 rounded-l-lg border border-gray-300 focus:border-transparent" %>
     <%= form.submit "Add", class: "bg-indigo-600 hover:bg-indigo-700 text-white font-medium py-2 px-4 rounded-r-lg transition duration-200" %>
   </div>
 <% end %>

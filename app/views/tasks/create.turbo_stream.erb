@@ -1,0 +1,9 @@
+<%= turbo_stream.append "tasks_#{current_user.id}", partial: "tasks/component/task", locals: { task: @task } %>
+
+<%= turbo_stream.replace "tracker_form" do %>
+  <%= render partial: "tasks/component/input_form", locals: { message: Task.new } %>
+<% end %>
+<% if !@running_task.nil? %>
+  <%= turbo_stream.replace(@running_task, partial: "tasks/component/task", locals: { task: @running_task }) %>
+<% end %>
+

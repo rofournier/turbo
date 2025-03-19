@@ -1,0 +1,13 @@
+<%= render layout: "shared/card", locals: { title: "Task Tracker" } do %>
+  <div class="flex flex-col h-full" data-controller="tracker">
+    <%= turbo_stream_from "tasks_#{current_user.id}" %>
+
+    <div class="flex-1 overflow-auto mb-2">
+      <%= render partial: "tasks/component/tasks", locals: { tasks: @tasks } %>
+    </div>
+    
+    <div class="flex-shrink-0">
+      <%= render partial: "tasks/component/input_form"%>
+    </div>
+  </div>
+<% end %>

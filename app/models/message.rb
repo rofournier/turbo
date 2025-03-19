@@ -14,7 +14,7 @@ class Message < ApplicationRecord
 
     Turbo::StreamsChannel.broadcast_action_to(
       "chat",
-      action: "scroll_to",
+      action: "scroll_to_bottom",
       target: "messages"
     )
   end

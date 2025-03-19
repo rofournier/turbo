@@ -5,13 +5,13 @@ class MessagesController < ApplicationController
 
   def create
     @messages = Message.all
-    @message = Message.create!(create_params)
+    @message = Message.create!(create_params.merge(sender: current_user.username))
   end
 
   private
 
   def create_params
-    params.require(:message).permit(:body, :sender)
+    params.require(:message).permit(:body)
   end
 
   def destroy_params

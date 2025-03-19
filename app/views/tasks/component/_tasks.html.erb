@@ -1,0 +1,5 @@
+<div id="tasks_<%= current_user.id %>" class="p-2">
+  <% @tasks.each do |task| %>
+    <%= render partial: "tasks/component/task", locals: { task: task } %>
+  <% end %>
+</div>
