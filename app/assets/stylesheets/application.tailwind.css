@@ -1,0 +1,7 @@
+
+/* Custom transitions for card expansion */
+.fixed.inset-4 {
+  height: calc(100vh - 2rem) !important;
+  width: calc(100vw - 2rem) !important;
+  margin: 0 !important;
+}

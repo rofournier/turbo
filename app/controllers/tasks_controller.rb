@@ -2,7 +2,10 @@ class TasksController < ApplicationController
   before_action :cancel_running_task, only: %i[create start]
 
   def index
-    @tasks = Task.all
+    all_tasks = current_user.tasks.order(created_at: :desc)
+    @tasks = all_tasks.group_by do |task|
+      task.created_at.to_date
+    end
   end
 
   def create
@@ -40,9 +43,9 @@ class TasksController < ApplicationController
   end
 
   def cancel_running_task
-    return unless @running_task = Task.find_by(running: true)
+    return if Task.find_by(running: true) == nil
+    @running_task = Task.cancel_running
     time_spent = @running_task.time_spent + (Time.current - @running_task.last_started_at).to_i
     @running_task.update(time_spent: time_spent)
-    @running_task = Task.cancel_running
   end
 end
