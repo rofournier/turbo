@@ -2,17 +2,23 @@ class TasksController < ApplicationController
   before_action :cancel_running_task, only: %i[create start]
 
   def index
-    all_tasks = current_user.tasks.order(created_at: :desc)
-    @tasks = all_tasks.group_by do |task|
-      task.created_at.to_date
-    end
+    @all_tasks = current_user.tasks.order(created_at: :desc)
+    @running_tasks = current_user.tasks.incomplete.order(created_at: :desc)
+    @completed_tasks = current_user.tasks.completed.order(created_at: :desc)
   end
 
   def create
     @task = Task.new(create_params)
     @task.last_started_at = Time.current
+    colour = "%06x" % (rand * 0xffffff)
+    @task.color = "##{colour}"
     @task.user = current_user
     @task.save!
+  end
+
+  def update
+    @task = Task.find(params[:id])
+    @task.update(update_params)
   end
 
   def start
@@ -27,6 +33,17 @@ class TasksController < ApplicationController
     @task.update(running: false)
   end
 
+  def complete
+    @task = Task.find(params[:id])
+    @task.update(completed: true)
+  end
+
+  def restore
+    @task = Task.find(params[:id])
+    @all_tasks = current_user.tasks.order(created_at: :desc)
+    @task.update(completed: false)
+  end
+
   def destroy
     @task = Task.find(destroy_params[:id])
     @task.destroy
@@ -36,6 +53,10 @@ class TasksController < ApplicationController
 
   def create_params
     params.require(:task).permit(:name)
+  end
+
+  def update_params
+    params.require(:task).permit(:name, :color)
   end
 
   def destroy_params

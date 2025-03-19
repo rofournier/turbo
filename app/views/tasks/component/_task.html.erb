@@ -1,4 +1,7 @@
-<div id="<%= dom_id(task) %>" class="<%= task.running ? 'bg-blue-50/60' : 'bg-white/50' %> backdrop-filter backdrop-blur-sm border border-white/40 rounded-lg p-3 mb-2 transition-all duration-200">
+<div id="<%= dom_id(task) %>" class="<%= task.running ? 'bg-white/50' : 'bg-blue/50' %> backdrop-filter backdrop-blur-sm border outline-[#0] rounded-lg p-3 mb-2 transition-all duration-200 relative overflow-hidden">
+  <% if task.color.present? %>
+    <div class="absolute top-0 right-0 w-10 h-10 transform translate-x-5 -translate-y-5 rotate-45" style="background-color: <%= task.color %>; opacity: 0.8;"></div>
+  <% end %>
   <div class="flex flex-col">
     <div class="flex items-center justify-between mb-1">
       <h3 class="font-medium text-gray-800"><%= task.name %></h3>
@@ -17,37 +20,40 @@
         </div>
       </div>
       
-      <div class="flex space-x-2">
-        <div class="w-[38px] h-[38px] flex items-center justify-center">
+      <div class="flex space-x-1">
+        <div class="w-[18px] h-[38px] flex items-center justify-center">
           <% if task.running %>
-            <%= button_to stop_task_path(task), 
-                  method: :patch, 
-                  form: { data: { turbo_stream: true } },
-                  class: "w-full h-full p-1.5 bg-red-100 rounded-full hover:bg-red-200 transition-colors duration-200 flex items-center justify-center" do %>
-              <svg xmlns="http://www.w3.org/2000/svg" class="h-5 w-5 text-red-600" viewBox="0 0 20 20" fill="currentColor">
-                <path fill-rule="evenodd" d="M10 18a8 8 0 100-16 8 8 0 000 16zM8 7a1 1 0 00-1 1v4a1 1 0 001 1h4a1 1 0 001-1V8a1 1 0 00-1-1H8z" clip-rule="evenodd" />
-              </svg>
-            <% end %>
+        <%= button_to stop_task_path(task), 
+          method: :patch, 
+          form: { data: { turbo_stream: true } },
+          class: "w-full h-full p-1.5 bg-red-100 rounded-full hover:bg-red-200 transition-colors duration-200 flex items-center justify-center" do %>
+          <svg xmlns="http://www.w3.org/2000/svg" class="h-5 w-5 text-red-600" viewBox="0 0 20 20" fill="currentColor">
+        <path fill-rule="evenodd" d="M10 18a8 8 0 100-16 8 8 0 000 16zM8 7a1 1 0 00-1 1v4a1 1 0 001 1h4a1 1 0 001-1V8a1 1 0 00-1-1H8z" clip-rule="evenodd" />
+          </svg>
+        <% end %>
           <% else %>
-            <%= button_to start_task_path(task), 
-                  method: :patch, 
-                  form: { data: { turbo_stream: true } },
-                  class: "w-full h-full p-1.5 bg-green-100 rounded-full hover:bg-green-200 transition-colors duration-200 flex items-center justify-center" do %>
-              <svg xmlns="http://www.w3.org/2000/svg" class="h-5 w-5 text-green-600" viewBox="0 0 20 20" fill="currentColor">
-                <path fill-rule="evenodd" d="M10 18a8 8 0 100-16 8 8 0 000 16zM9.555 7.168A1 1 0 008 8v4a1 1 0 001.555.832l3-2a1 1 0 000-1.664l-3-2z" clip-rule="evenodd" />
-              </svg>
-            <% end %>
+        <%= button_to start_task_path(task), 
+          method: :patch, 
+          form: { data: { turbo_stream: true } },
+          class: "w-full h-full p-1.5 bg-green-100 rounded-full hover:bg-green-200 transition-colors duration-200 flex items-center justify-center" do %>
+          <svg xmlns="http://www.w3.org/2000/svg" class="h-5 w-5 text-green-600" viewBox="0 0 20 20" fill="currentColor">
+        <path fill-rule="evenodd" d="M10 18a8 8 0 100-16 8 8 0 000 16zM9.555 7.168A1 1 0 008 8v4a1 1 0 001.555.832l3-2a1 1 0 000-1.664l-3-2z" clip-rule="evenodd" />
+          </svg>
+        <% end %>
           <% end %>
         </div>
 
         <div class="w-[38px] h-[38px] flex items-center justify-center">
-          <%= button_to task_path(task), 
-                    method: :delete, 
-                    form: { data: { turbo_stream: true } },
-                    class: "w-full h-full p-1.5 rounded-full hover:bg-gray-100 transition-colors duration-200 flex items-center justify-center" do %>
-            <svg xmlns="http://www.w3.org/2000/svg" class="h-5 w-5 text-red-600" viewBox="0 0 20 20" fill="currentColor">
-              <path fill-rule="evenodd" d="M9 2a1 1 0 00-.894.553L7.382 4H4a1 1 0 000 2v10a2 2 0 002 2h8a2 2 0 002-2V6a1 1 0 100-2h-3.382l-.724-1.447A1 1 0 0011 2H9zM7 8a1 1 0 012 0v6a1 1 0 11-2 0V8zm5-1a1 1 0 00-1 1v6a1 1 0 102 0V8a1 1 0 00-1-1z" clip-rule="evenodd" />
-            <% end %>
+          <%= button_to complete_task_path(task), 
+        method: :patch, 
+        form: { data: { turbo_stream: true, turbo_confirm: "Do you want to archive this task ?" } },
+        class: "w-full h-full p-1.5 bg-blue-100 rounded-full hover:bg-blue-200 transition-colors duration-200 flex items-center justify-center" do %>
+        <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 48 48" width="24px" height="24px">
+          <circle cx="24" cy="24" r="20" fill="#4dd0e1"/>
+          <path fill="#fff" d="M22.491,30.69c-0.576,0-1.152-0.22-1.591-0.659l-6.083-6.084c-0.879-0.878-0.879-2.303,0-3.182 c0.878-0.879,2.304-0.879,3.182,0l6.083,6.084c0.879,0.878,0.879,2.303,0,3.182C23.643,30.47,23.067,30.69,22.491,30.69z"/>
+          <path fill="#fff" d="M22.491,30.69c-0.576,0-1.152-0.22-1.591-0.659c-0.879-0.878-0.879-2.303,0-3.182l9.539-9.539 c0.878-0.879,2.304-0.879,3.182,0c0.879,0.878,0.879,2.303,0,3.182l-9.539,9.539C23.643,30.47,23.067,30.69,22.491,30.69z"/>
+        </svg>
+          <% end %>
         </div>
       </div>
     </div>

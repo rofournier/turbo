@@ -1,7 +1,7 @@
 Rails.application.routes.draw do
   devise_for :users
-  devise_scope :user do  
-    get '/users/sign_out' => 'devise/sessions#destroy'     
+  devise_scope :user do
+    get "/users/sign_out" => "devise/sessions#destroy"
  end
   root "dashboard#index"
   resources :todos do
@@ -14,6 +14,8 @@ Rails.application.routes.draw do
     member do
       patch :start
       patch :stop
+      patch :complete
+      patch :restore
     end
   end
 end

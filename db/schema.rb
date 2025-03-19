@@ -21,8 +21,10 @@ ActiveRecord::Schema[8.0].define(version: 2025_03_19_094506) do
   create_table "tasks", force: :cascade do |t|
     t.string "name"
     t.string "description"
+    t.string "color"
     t.boolean "running", default: true
     t.integer "time_spent", default: 0
+    t.boolean "completed", default: false
     t.datetime "last_started_at"
     t.integer "user_id", null: false
     t.datetime "created_at", null: false

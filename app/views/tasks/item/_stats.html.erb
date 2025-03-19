@@ -1,0 +1,26 @@
+<% total_tasks = tasks.count %>
+<% total_time = tasks.sum(:time_spent) %>
+
+<div class="bg-white rounded-xl shadow-lg p-6 mb-8">
+  <div class="grid grid-cols-1 md:grid-cols-2 gap-4">
+    <div class="p-4 bg-indigo-50 rounded-lg text-center">
+      <p class="text-sm font-medium text-indigo-600">Total Tasks</p>
+      <p class="text-3xl font-bold text-gray-800"><%= total_tasks %></p>
+    </div>
+    <div class="p-4 bg-indigo-50 rounded-lg text-center">
+      <p class="text-sm font-medium text-indigo-600">Total Time</p>
+      <p class="text-3xl font-bold text-gray-800">
+    <% 
+      hours = total_time / 3600
+      minutes = (total_time % 3600) / 60
+      seconds = total_time % 60
+      time_string = []
+      time_string << "#{hours}h" if hours > 0
+      time_string << "#{minutes}m" if minutes > 0
+      time_string << "#{seconds}s" if time_string.empty? || seconds > 0
+    %>
+    <%= time_string.join(' ') %>
+      </p>
+    </div>
+  </div>
+</div>

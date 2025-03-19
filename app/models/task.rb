@@ -1,11 +1,12 @@
 class Task < ApplicationRecord
-
   belongs_to :user
-  
+
   after_create_commit :broadcast_create_task
   after_create_commit :broadcast_scroll
 
   scope :running, -> { where(running: true) }
+  scope :completed, -> { where(completed: true) }
+  scope :incomplete, -> { where(completed: false) }
 
   private
 
@@ -31,6 +32,4 @@ class Task < ApplicationRecord
       target: "tasks_#{self.user.id}"
     )
   end
-
 end
-

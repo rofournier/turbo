@@ -2,65 +2,59 @@
   <div class="container mx-auto px-4 max-w-5xl">
     <h1 class="text-3xl font-bold text-indigo-700 mb-6 text-center">Weekly Task Summary</h1>
     
-    <% total_tasks = @tasks.values.flatten.count %>
-    <% total_time = @tasks.values.flatten.sum { |task| task.time_spent } %>
+    <%= render "tasks/item/stats", tasks: @all_tasks%>
     
-    <div class="bg-white rounded-xl shadow-lg p-6 mb-8">
-      <div class="grid grid-cols-1 md:grid-cols-2 gap-4">
-        <div class="p-4 bg-indigo-50 rounded-lg text-center">
-          <p class="text-sm font-medium text-indigo-600">Total Tasks</p>
-          <p class="text-3xl font-bold text-gray-800"><%= total_tasks %></p>
+    <%= render "tasks/item/summary", completed_tasks: @completed_tasks, running_tasks: @running_tasks %>
+
+    <div class="mt-10 bg-white rounded-lg shadow-md p-6">
+      <h2 class="text-2xl font-semibold text-indigo-600 mb-6 text-center">Analytics</h2>
+      
+      <div class="grid grid-cols-1 md:grid-cols-2 gap-8 mb-8">
+       <div id="distro_<%= current_user.id%>" class="bg-gray-50 p-4 rounded-lg shadow-sm">
+          <h3 class="text-lg font-medium text-gray-800 mb-4">Task Completion Distribution</h3>
+          <%= column_chart @all_tasks.group(:completed).count,
+              colors: ["#F59E0B"],
+              library: {
+                scales: { y: { beginAtZero: true } },
+                xAxes: [{
+                  ticks: {
+                    callback: 'function(value) { return value ? "Completed" : "Incomplete"; }'
+                  }
+                }]
+              } %>
         </div>
-        <div class="p-4 bg-indigo-50 rounded-lg text-center">
-          <p class="text-sm font-medium text-indigo-600">Total Time</p>
-          <p class="text-3xl font-bold text-gray-800">
-        <% 
-          hours = total_time / 3600
-          minutes = (total_time % 3600) / 60
-          seconds = total_time % 60
-          time_string = []
-          time_string << "#{hours}h" if hours > 0
-          time_string << "#{minutes}m" if minutes > 0
-          time_string << "#{seconds}s" if time_string.empty? || seconds > 0
-        %>
-        <%= time_string.join(' ') %>
-          </p>
+
+        <div class="bg-gray-50 p-4 rounded-lg shadow-sm">
+          <h3 class="text-lg font-medium text-gray-800 mb-4">Time Distribution</h3>
+          <%= pie_chart @all_tasks.group(:name).sum(:time_spent), 
+                        donut: true, 
+                        colors: ["#4F46E5", "#10B981", "#F59E0B", "#EF4444", "#8B5CF6", "#EC4899"], 
+                        library: { 
+                          legend: { position: 'bottom' },
+                          title: { text: 'Time Spent by Task', x: -20 } 
+                        } %>
         </div>
       </div>
-    </div>
-    
-    <div class="space-y-6">
-      <% @tasks.each do |date, day| %>
-        <div class="bg-white rounded-xl shadow-lg overflow-hidden">
-          <div class="bg-gradient-to-r from-indigo-500 to-purple-600 px-6 py-4">
-            <h2 class="text-xl font-bold text-white"><%= date.strftime("%A, %B %d, %Y") %></h2>
-          </div>
-          
-          <div class="p-6">
-            <div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-4">
-              <% day.each do |task| %>
-                <div class="bg-gray-50 border border-gray-100 rounded-lg p-4 hover:shadow-md transition duration-300 hover:bg-gray-50">
-                  <div class="flex justify-between items-start">
-                    <h3 class="font-semibold text-gray-800 text-lg mb-2"><%= task.name %></h3>
-                    <span class="bg-indigo-100 text-indigo-800 text-sm font-semibold px-3 py-1 rounded inline-flex items-center justify-center">
-                      <% 
-                      hours = task.time_spent / 3600
-                      minutes = (task.time_spent % 3600) / 60
-                      seconds = task.time_spent % 60
-                      time_string = []
-                      time_string << "#{hours}h" if hours > 0
-                      time_string << "#{minutes}m" if minutes > 0
-                      time_string << "#{seconds}s" if time_string.empty? || seconds > 0
-                      %>
-                      <%= time_string.join(' ') %>
-                    </span>
-                  </div>
-                </div>
-              <% end %>
-            </div>
-          </div>
+      
+      <div class="grid grid-cols-1 md:grid-cols-2 gap-8">
+        <div class="bg-gray-50 p-4 rounded-lg shadow-sm">
+          <h3 class="text-lg font-medium text-gray-800 mb-4">Weekly Progress</h3>
+          <%= line_chart @all_tasks.group_by_day(:created_at, last: 7).sum(:time_spent),
+                        colors: ["#10B981"],
+                        library: {
+                          scales: { y: { beginAtZero: true } }
+                        } %>
         </div>
-      <% end %>
+
+        <div class="bg-gray-50 p-4 rounded-lg shadow-sm">
+          <h3 class="text-lg font-medium text-gray-800 mb-4">Task Comparison</h3>
+          <%= bar_chart @all_tasks.group(:name).sum(:time_spent), 
+                        colors: ["#4F46E5"],
+                        library: { 
+                          scales: { y: { beginAtZero: true } } 
+                        } %>
+        </div>
+      </div>
     </div>
   </div>
 </div>
