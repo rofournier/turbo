@@ -14,8 +14,6 @@
     <%#= tag.link rel: "manifest", href: pwa_manifest_path(format: :json) %>
 
     <link rel="icon" href="/icon.png" type="image/png">
-    <link rel="icon" href="/icon.svg" type="image/svg+xml">
-    <link rel="apple-touch-icon" href="/icon.png">
 
     <%# Includes all stylesheet files in app/assets/stylesheets %>
     <%= stylesheet_link_tag :app, "data-turbo-track": "reload" %>
@@ -26,25 +24,21 @@
     <% if content_for?(:skip_header) %>
       <%= yield :skip_header %>
     <% else %>
-      <header class="bg-white shadow">
-        <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-4">
-          <div class="flex justify-between items-center">
-            <div>
-              <a href="/" class="text-2xl font-bold text-indigo-600 hover:text-indigo-500">Dashboard</a>
-            </div>
-            <%= yield :header %>
-            <% if user_signed_in? %>
-              <div>
-                <%= link_to 'Logout', destroy_user_session_path, data: { turbo_method: :delete }, class: 'text-red-500 hover:text-red-700' %>
-              </div>
-            <% end %>
-          </div>
+    <nav class="bg-white shadow sticky top-0 left-0 w-full p-4 flex justify-between items-center"> 
+      <div>
+        <a href="/" class="text-2xl font-bold text-indigo-600 hover:text-indigo-500">Dashboard</a>
+      </div>
+      <% if user_signed_in? %>
+        <div>
+          <%= link_to 'Logout', destroy_user_session_path, data: { turbo_method: :delete }, class: 'text-red-500 hover:text-red-700' %>
         </div>
-      </header>
+      <% end %>
+    </nav> 
+
     <% end %>
     
     <main class="flex-grow">
-      <div class="max-w-7xl mx-auto py-6">
+      <div class="mx-auto">
         <%= yield %>
       </div>
     </main>
