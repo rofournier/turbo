@@ -7,6 +7,14 @@ class TasksController < ApplicationController
     @completed_tasks = current_user.tasks.completed.order(created_at: :desc)
   end
 
+  def edit
+    @task = Task.find(params[:id])
+  end
+
+  def show
+    @task = Task.find(params[:id])
+  end
+
   def create
     @task = Task.new(create_params)
     @task.last_started_at = Time.current
@@ -18,7 +26,12 @@ class TasksController < ApplicationController
 
   def update
     @task = Task.find(params[:id])
-    @task.update(update_params)
+    time_spent = if params[:task][:hours].present? || params[:task][:minutes].present?
+             (params[:task][:hours].to_i * 3600) + (params[:task][:minutes].to_i * 60)
+    else
+             @task.time_spent
+    end
+    @task.update(update_params.except(:hours, :minutes).merge(time_spent: time_spent))
   end
 
   def start
@@ -56,7 +69,7 @@ class TasksController < ApplicationController
   end
 
   def update_params
-    params.require(:task).permit(:name, :color)
+    params.require(:task).permit(:name, :color, :hours, :minutes)
   end
 
   def destroy_params
