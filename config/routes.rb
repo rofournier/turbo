@@ -18,4 +18,6 @@ Rails.application.routes.draw do
       patch :restore
     end
   end
+  resources :settings
+
 end

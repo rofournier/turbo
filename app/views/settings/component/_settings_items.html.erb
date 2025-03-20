@@ -1,0 +1,41 @@
+<div id="settings_items" class="p-2">
+  <% @settings["widgets"].each do |key, widget| %>
+    <div class="flex items-center justify-between p-4 bg-gray-50 rounded-lg shadow-sm hover:bg-gray-100 transition duration-200 mb-3">
+      <div class="flex items-center">
+        <input type="checkbox" 
+          id="widgets_<%= key %>_visible" 
+          name="widgets[<%= key %>][visible]" 
+          <%= widget["visible"] ? "checked" : "" %> 
+          class="form-checkbox h-5 w-5 text-yellow-600" 
+          data-action="change->settings#toggleVisibility" 
+          data-settings-widget-key-param="<%= key %>">
+        <label for="widgets_<%= key %>_visible" class="ml-3 text-gray-700 font-medium">
+          <%= widget["name"].split('/').last.sub("_card", "").humanize %>
+        </label>
+      </div>
+      
+      <div class="flex items-center space-x-3">
+        <div class="flex items-center">
+          <label class="text-xs text-gray-500 mr-2">Color</label>
+          <input type="color" 
+            name="widgets[<%= key %>][color]" 
+            value="<%= widget["color"] || '#ffffff' %>" 
+            class="text-xs p-1 border rounded" 
+            data-action="change->settings#updateColor" 
+            data-settings-widget-key-param="<%= key %>">
+        </div>
+        
+        <div class="flex items-center">
+          <label class="text-xs text-gray-500 mr-2">Order</label>
+          <input type="number" 
+        name="widgets[<%= key %>][order]" 
+        value="<%= widget["order"] || 0 %>" 
+        min="0" 
+        class="text-xs p-1 w-12 border rounded" 
+        data-action="change->settings#updateOrder" 
+        data-settings-widget-key-param="<%= key %>">
+        </div>
+      </div>
+    </div>
+  <% end %>
+</div>

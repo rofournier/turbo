@@ -1,0 +1,14 @@
+<%= render layout: "shared/card", locals: { title: "Board", color: "bg-green-100", id: "board-widget" } do %>
+  <div class="flex flex-col h-full" data-controller="board">
+    <%= turbo_stream_from "board" %>
+
+    <div class="flex-1 overflow-hidden">
+      <%= render partial: "board/component/canvas"%>
+    </div>
+
+    <div class="flex-none">
+      <%= render partial: "board/component/toolbar" %>
+    </div>
+
+  </div>
+<% end %>

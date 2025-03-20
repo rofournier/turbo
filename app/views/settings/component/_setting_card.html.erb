@@ -1,0 +1,10 @@
+<%= render layout: "shared/card", locals: { title: "Widget Settings", color: "bg-yellow-100" } do %>
+  <div class="flex flex-col h-full" data-controller="settings">
+    <%= turbo_stream_from "settings" %>
+    
+    <div class="flex-1 overflow-auto mb-2">
+      <%= render partial: "settings/component/settings_items" %>
+    </div>
+    
+  </div>
+<% end %>

@@ -1,4 +1,4 @@
-<%= render layout: "shared/card", locals: { title: "Todo List" } do %>
+<%= render layout: "shared/card", locals: { title: "Todo List", color: "bg-teal-100" } do %>
   <div class="flex flex-col h-full">
     <%= turbo_stream_from "todos" %>
     
