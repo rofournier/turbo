@@ -11,11 +11,14 @@ class SettingsController < ApplicationController
       @new_value = ActiveModel::Type::Boolean.new.cast(@new_value)
     elsif @property_to_update == "order"
       @new_value = @new_value.to_i
+    elsif @property_to_update == "color"
+      @new_value = @new_value
     end
 
     @settings["widgets"][@widget_key][@property_to_update] = @new_value
     current_user.setting.update(config: @settings.to_json)
 
+    @widget = @settings["widgets"][@widget_key]
     @todo = Todo.new
     @todos = Todo.all
     @messages = Message.all
@@ -37,6 +40,5 @@ class SettingsController < ApplicationController
         url: "https://radio3.pro-fhi.net/live/Radio Metal"
       }
     ]
-
   end
 end

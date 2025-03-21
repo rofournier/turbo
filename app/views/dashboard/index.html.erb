@@ -2,7 +2,7 @@
   <%= turbo_stream_from "settings_user_#{current_user.id}" %>
   <% @ordered_widgets.each do |widget| %>
     <% if widget["visible"] %>
-      <%= render partial: "#{widget["name"]}", locals: { messages: @messages, todo: @todo, widget: widget } %>
+      <%= render partial: "#{widget["name"]}", locals: { messages: @messages, todo: Todo.new, widget: widget } %>
     <% end %>
   <% end %>
   <%= render partial: "settings/component/setting_card", locals: { settings: @settings }%>

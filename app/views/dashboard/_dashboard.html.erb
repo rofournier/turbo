@@ -1,8 +1,0 @@
-<div id="dashboard" class="min-h-screen w-full py-12 px-4 sm:px-6 lg:px-8 flex flex-wrap items-center justify-center">
-  <% @ordered_widgets.each do |widget| %>
-    <% if widget["visible"] %>
-      <%= render partial: "#{widget["name"]}", locals: { messages: @messages, todo: @todo, widget: widget } %>
-    <% end %>
-  <% end %>
-  <%= render partial: "settings/component/setting_card"%>
-</div>

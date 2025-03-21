@@ -1,4 +1,4 @@
-<div id="<%= dom_id(task) %>" class="<%= task.running ? 'bg-white/50' : 'bg-blue/50' %> backdrop-filter backdrop-blur-sm border outline-[#0] rounded-lg p-3 mb-2 transition-all duration-200 relative overflow-hidden">
+<div id="<%= dom_id(task) %>" class="<%= task.running ? 'bg-white' : 'bg-blue-100' %> backdrop-filter backdrop-blur-sm border outline-[#0] rounded-lg p-3 mb-2 transition-all duration-200 relative overflow-hidden">
   <% if task.color.present? %>
     <div class="absolute top-0 right-0 w-10 h-10 transform translate-x-5 -translate-y-5 rotate-45" style="background-color: <%= task.color %>; opacity: 0.8;"></div>
   <% end %>
@@ -8,9 +8,6 @@
         <h3 class="font-medium text-gray-800 mr-2"><%= task.name %></h3>
 
       </div>
-      <span class="text-sm px-2 py-1 rounded-full <%= task.running ? 'bg-blue-100 text-blue-700' : 'bg-gray-100 text-gray-600' %>">
-        <%= task.running ? 'Active' : 'Inactive' %>
-      </span>
     </div>
     
     <div class="flex items-center justify-between text-sm">

@@ -1,3 +1,79 @@
 <% if @widget_key == 'radio' %>
-  <%= turbo_stream.remove "radio-widget" %>
+  <% if @property_to_update == "visible" && @new_value == false %>
+    <%= turbo_stream.remove "radio-widget" %>
+  <% elsif @property_to_update == "visible" && @new_value == true %>
+    <%= turbo_stream.append "dashboard" do %>
+      <%= render partial: "radio/component/radio_card", locals: { widget: @widget } %>
+    <% end %>
+  <% end %>
+
+  <% if @property_to_update == "color" %>
+    <%= turbo_stream.replace "radio-widget" do %>
+      <%= render partial: "radio/component/radio_card", locals: { widget: @widget } %>
+    <% end %>
+  <% end %>
+<% end %>
+
+<% if @widget_key == 'todo' %>
+  <% if @property_to_update == "visible" && @new_value == false %>
+    <%= turbo_stream.remove "todo-widget" %>
+  <% elsif @property_to_update == "visible" && @new_value == true %>
+    <%= turbo_stream.append "dashboard" do %>
+      <%= render partial: "todos/component/todo_card", locals: { widget: @widget } %>
+    <% end %>
+  <% end %>
+
+  <% if @property_to_update == "color" %>
+    <%= turbo_stream.replace "todo-widget" do %>
+      <%= render partial: "todos/component/todo_card", locals: { widget: @widget } %>
+    <% end %>
+  <% end %>
+<% end %>
+
+<% if @widget_key == 'tracker' %>
+  <% if @property_to_update == "visible" && @new_value == false %>
+    <%= turbo_stream.remove "tracker-widget" %>
+  <% elsif @property_to_update == "visible" && @new_value == true %>
+    <%= turbo_stream.append "dashboard" do %>
+      <%= render partial: "tasks/component/tracker_card", locals: { widget: @widget } %>
+    <% end %>
+  <% end %>
+
+  <% if @property_to_update == "color" %>
+    <%= turbo_stream.replace "tracker-widget" do %>
+      <%= render partial: "tasks/component/tracker_card", locals: { widget: @widget } %>
+    <% end %>
+  <% end%>
+<% end %>
+
+<% if @widget_key == 'chat' %>
+  <% if @property_to_update == "visible" && @new_value == false %>
+    <%= turbo_stream.remove "chat-widget" %>
+  <% elsif @property_to_update == "visible" && @new_value == true %>
+    <%= turbo_stream.append "dashboard" do %>
+      <%= render partial: "messages/component/chat_card", locals: { widget: @widget } %>
+    <% end %>
+  <% end %>
+
+  <% if @property_to_update == "color" %>
+    <%= turbo_stream.replace "chat-widget" do %>
+      <%= render partial: "messages/component/chat_card", locals: { widget: @widget } %>
+    <% end %>
+  <% end %>
+<% end %>
+
+<% if @widget_key == 'board' %>
+  <% if @property_to_update == "visible" && @new_value == false %>
+    <%= turbo_stream.remove "board-widget" %>
+  <% elsif @property_to_update == "visible" && @new_value == true %>
+    <%= turbo_stream.append "dashboard" do %>
+      <%= render partial: "board/component/board_card", locals: { widget: @widget } %>
+    <% end %>
+  <% end %>
+
+  <% if @property_to_update == "color" %>
+    <%= turbo_stream.replace "board-widget" do %>
+      <%= render partial: "board/component/board_card", locals: { widget: @widget } %>
+    <% end %>
+  <% end %>
 <% end %>

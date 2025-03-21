@@ -1,13 +1,13 @@
-<%= render layout: "shared/card", locals: { title: "Todo List", color: "bg-teal-100" } do %>
+<%= turbo_stream_from "todos" %>
+<%= render layout: "shared/card", locals: { title: "Todo List", style: "background-color: #{widget["color"]};", id: "todo-widget" } do %>
   <div class="flex flex-col h-full">
-    <%= turbo_stream_from "todos" %>
     
     <div class="flex-1 overflow-auto mb-2">
       <%= render 'todos/component/todo_list'%>
     </div>
-    
+
     <div class="flex-shrink-0">
-      <%= render partial: "todos/component/todo_form", locals: { todo: todo } %>
+      <%= render partial: "todos/component/todo_form", locals: { todo: Todo.new } %>
     </div>
   </div>
 <% end %>
