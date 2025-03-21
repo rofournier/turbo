@@ -1,0 +1,11 @@
+<%= turbo_stream.replace "stats-container" do %>
+  <%= render "tasks/item/stats", tasks: @all_tasks %>
+<% end %>
+
+<%= turbo_stream.replace "summary-container" do %>
+  <%= render "tasks/item/table", completed_tasks: @completed_tasks, running_tasks: @running_tasks %>
+<% end %>
+
+<%= turbo_stream.replace "charts-container" do %>
+  <%= render "tasks/item/charts" %>
+<% end %>

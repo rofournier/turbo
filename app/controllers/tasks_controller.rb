@@ -18,7 +18,7 @@ class TasksController < ApplicationController
   def create
     @task = Task.new(create_params)
     @task.last_started_at = Time.current
-    colour = "%06x" % (rand * 0xffffff)
+    colour = "000000"
     @task.color = "##{colour}"
     @task.user = current_user
     @task.save!
@@ -61,6 +61,23 @@ class TasksController < ApplicationController
     @task = Task.find(destroy_params[:id])
     @task.destroy
   end
+
+  def week_view
+    # Get current week's date range (Monday to Sunday)
+    start_date = Date.current.beginning_of_week
+    end_date = Date.current.end_of_week
+    
+    # Filter tasks by current week
+    @all_tasks = current_user.tasks.where(created_at: start_date..end_date).order(created_at: :desc)
+    @running_tasks = current_user.tasks.incomplete.where(created_at: start_date..end_date).order(created_at: :desc)
+    @completed_tasks = current_user.tasks.completed.where(created_at: start_date..end_date).order(created_at: :desc)
+  
+  end
+
+  def edit_name
+    @task = Task.find(params[:id])
+  end
+  
 
   private
 

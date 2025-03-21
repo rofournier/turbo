@@ -1,0 +1,115 @@
+<div class="bg-white rounded-xl shadow-lg overflow-hidden mb-6">
+  <div class="bg-gradient-to-r from-indigo-500 to-purple-600 px-6 py-4">
+    <h2 class="text-xl font-bold text-white text-center">Weekly Task Distribution</h2>
+  </div>
+  
+  <div class="p-6">
+    <div class="overflow-x-auto">
+      <table class="min-w-full">
+        <thead>
+          <tr>
+            <th class="px-4 py-3 bg-gray-50 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">Day</th>
+            <th class="px-4 py-3 bg-gray-50 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">Task Distribution</th>
+          </tr>
+        </thead>
+        <tbody class="bg-white divide-y divide-gray-200">
+          <% all_tasks = running_tasks + completed_tasks %>
+          <% start_date = Date.current.beginning_of_week %>
+          <% end_date = Date.current.end_of_week %>
+          <% today = Date.current %>
+          
+          <% (start_date..end_date).each do |date| %>
+            <tr class="hover:bg-gray-50 transition-colors duration-150 <%= date == today ? 'bg-indigo-50' : '' %>">
+              <td class="px-4 py-4 whitespace-nowrap font-medium">
+                <div class="text-lg <%= date == today ? 'text-indigo-600 font-bold' : 'text-gray-700' %>">
+                  <%= date.strftime("%A") %>
+                </div>
+                <div class="text-sm text-gray-500">
+                  <%= date.strftime("%b %d") %>
+                </div>
+              </td>
+              <td class="px-4 py-6 w-full">
+                <% 
+                  # Only show tasks for past days and today, not future days
+                  if date <= today
+                    # Filter tasks that were active on this specific date
+                    day_tasks = all_tasks.select do |task|
+                      task.created_at.to_date <= date && 
+                      (!task.completed || (task.completed && task.updated_at.to_date >= date))
+                    end
+                    
+                    # Skip if no tasks on this day
+                    if day_tasks.any?
+                      # Calculate total time for normalization
+                      total_time = day_tasks.sum(&:time_spent).to_f
+                      total_time = 1 if total_time == 0 # Prevent division by zero
+                %>
+                  <div class="w-full h-10 bg-gray-200 rounded-lg overflow-hidden shadow-inner flex">
+                    <% 
+                      # Track cumulative width for positioning
+                      cumulative_percent = 0
+                      
+                      # Sort tasks by time spent (descending) for better visualization
+                      day_tasks.sort_by { |t| -t.time_spent }.each do |task|
+                        # Calculate percentage width (minimum 5% for visibility)
+                        percent = [(task.time_spent / total_time * 100), 5].max
+                        
+                        # Cap at remaining space
+                        percent = [percent, 100 - cumulative_percent].min
+                    %>
+                    
+                    <div class="h-full transition-all duration-300 ease-in-out relative group"
+                         style="width: <%= percent %>%; background-color: <%= task.color %>;">
+                      <div class="opacity-0 group-hover:opacity-100 absolute inset-0 flex items-center justify-center transition-opacity duration-200 bg-black bg-opacity-50 text-white text-xs font-bold">
+                        <%= task.name %> 
+                        <% 
+                          hours = task.time_spent / 3600
+                          minutes = (task.time_spent % 3600) / 60
+                        %>
+                        <% if hours > 0 || minutes > 0 %>
+                          (<%= hours > 0 ? "#{hours}h" : "" %><%= minutes > 0 ? " #{minutes}m" : "" %>)
+                        <% end %>
+                      </div>
+                    </div>
+                    
+                    <% 
+                      cumulative_percent += percent
+                      end 
+                    %>
+                  </div>
+                  
+                  <div class="mt-2 text-xs">
+                    <div class="flex flex-wrap gap-3 items-center">
+                      <% day_tasks.each do |task| %>
+                        <div class="flex items-center">
+                          <div class="h-3 w-3 rounded-full mr-1" style="background-color: <%= task.color %>;"></div>
+                          <span class="font-medium"><%= task.name %></span>
+                        </div>
+                      <% end %>
+                    </div>
+                  </div>
+                <% else %>
+                  <div class="w-full h-10 bg-gray-200 rounded-lg overflow-hidden shadow-inner flex items-center justify-center text-gray-400 italic">
+                    No tasks recorded for this day
+                  </div>
+                <% end %>
+              <% else # Future date %>
+                <div class="w-full h-10 bg-gray-200 rounded-lg overflow-hidden shadow-inner flex items-center justify-center text-gray-400 italic">
+                  <% if date == today + 1 %>
+                    Tomorrow
+                  <% else %>
+                    Future date
+                  <% end %>
+                </div>
+              <% end %>
+              </td>
+            </tr>
+          <% end %>
+        </tbody>
+      </table>
+    </div>
+    <div class="mt-4 text-sm text-gray-500 italic text-center">
+      Segment width represents the proportion of time spent on each task per day
+    </div>
+  </div>
+</div>

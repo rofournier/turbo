@@ -11,11 +11,15 @@ Rails.application.routes.draw do
   end
   resources :messages
   resources :tasks do
+    collection do
+      get :week_view
+    end
     member do
       patch :start
       patch :stop
       patch :complete
       patch :restore
+      get :edit_name
     end
   end
   resources :settings

@@ -1,69 +1,169 @@
 <div class="space-y-6">
-  <!-- In Progress Section -->
+  <!-- Task Dashboard -->
   <div class="bg-white rounded-xl shadow-lg overflow-hidden">
-    <div class="bg-gradient-to-r from-indigo-500 to-purple-600 px-6 py-4">
-      <h2 class="text-xl font-bold text-white text-center"> Tasks </h2>
+    <div class="bg-gradient-to-r from-indigo-600 to-purple-700 px-6 py-5">
+      <h2 class="text-xl font-bold text-white text-center flex items-center justify-center gap-2">
+        <svg xmlns="http://www.w3.org/2000/svg" class="h-6 w-6" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+          <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 5H7a2 2 0 00-2 2v12a2 2 0 002 2h10a2 2 0 002-2V7a2 2 0 00-2-2h-2M9 5a2 2 0 002 2h2a2 2 0 002-2M9 5a2 2 0 012-2h2a2 2 0 012 2" />
+        </svg>
+        Task Dashboard
+      </h2>
+    </div>
+    
+    <!-- Statistics Summary -->
+    <div class="bg-gray-50 px-6 py-4 border-b border-gray-200">
+      <div class="grid grid-cols-2 md:grid-cols-4 gap-4">
+        <div class="bg-white p-4 rounded-lg shadow-sm border border-gray-100">
+          <p class="text-sm text-gray-500 mb-1">Active Tasks</p>
+          <p class="text-2xl font-bold text-indigo-600"><%= running_tasks.count %></p>
+        </div>
+        <div class="bg-white p-4 rounded-lg shadow-sm border border-gray-100">
+          <p class="text-sm text-gray-500 mb-1">Completed Tasks</p>
+          <p class="text-2xl font-bold text-green-600"><%= completed_tasks.count %></p>
+        </div>
+        <div class="bg-white p-4 rounded-lg shadow-sm border border-gray-100">
+          <p class="text-sm text-gray-500 mb-1">Total Time</p>
+          <p class="text-2xl font-bold text-purple-600">
+            <% total_time = (running_tasks + completed_tasks).sum(&:time_spent) %>
+            <% hours = total_time / 3600 %>
+            <% minutes = (total_time % 3600) / 60 %>
+            <%= "#{hours}h #{minutes}m" %>
+          </p>
+        </div>
+        <div class="bg-white p-4 rounded-lg shadow-sm border border-gray-100">
+          <p class="text-sm text-gray-500 mb-1">Completion Rate</p>
+          <p class="text-2xl font-bold text-blue-600">
+            <% total = running_tasks.count + completed_tasks.count %>
+            <% percentage = total > 0 ? (completed_tasks.count.to_f / total * 100).round : 0 %>
+            <%= "#{percentage}%" %>
+          </p>
+        </div>
+      </div>
     </div>
     
     <div class="p-6">
-      <div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-4">
-        <% running_tasks.each do |task| %>
-          <div class="bg-gray-50 border border-gray-100 rounded-lg p-4 hover:shadow-md transition duration-300 hover:bg-gray-50">
-            <div class="flex justify-between items-start">
-              <h3 class="font-semibold text-gray-800 text-lg mb-2"><%= task.name %></h3>
-              <span class="bg-indigo-500 text-white text-sm font-semibold px-3 py-1 rounded flex items-center gap-1">
-                <svg xmlns="http://www.w3.org/2000/svg" class="h-4 w-4" fill="none" viewBox="0 0 24 24" stroke="currentColor">
-                  <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 8v4l3 3m6-3a9 9 0 11-18 0 9 9 0 0118 0z" />
-                </svg>
-                <% 
-                hours = task.time_spent / 3600
-                minutes = (task.time_spent % 3600) / 60
-                seconds = task.time_spent % 60
-                time_string = []
-                time_string << "#{hours}h" if hours > 0
-                time_string << "#{minutes}m" if minutes > 0
-                time_string << "#{seconds}s" if time_string.empty? || seconds > 0
-                %>
-                <%= time_string.join(' ') %>
-              </span>
-            </div>
+      <!-- In Progress Section -->
+      <% if running_tasks.any? %>
+        <div class="mb-8">
+          <h3 class="text-lg font-semibold text-gray-800 mb-4 flex items-center">
+            <span class="inline-block w-3 h-3 bg-indigo-500 rounded-full mr-2"></span>
+            Active Tasks (<%= running_tasks.count %>)
+          </h3>
+          
+          <div class="grid grid-cols-1 lg:grid-cols-2 gap-4">
+            <% running_tasks.each do |task| %>
+              <div class="bg-white border border-indigo-100 rounded-lg p-5 hover:shadow-md transition duration-300 relative overflow-hidden">
+                <div class="absolute top-0 left-0 w-1 h-full bg-indigo-500"></div>
+                <div class="ml-2">
+                  <div class="flex justify-between items-start mb-3">
+                    <h3 class="font-semibold text-gray-800 text-lg"><%= task.name %></h3>
+                    <span class="bg-indigo-100 text-indigo-800 text-sm font-medium px-3 py-1 rounded-full">
+                      <% 
+                      hours = task.time_spent / 3600
+                      minutes = (task.time_spent % 3600) / 60
+                      seconds = task.time_spent % 60
+                      time_string = []
+                      time_string << "#{hours}h" if hours > 0
+                      time_string << "#{minutes}m" if minutes > 0
+                      time_string << "#{seconds}s" if time_string.empty? || seconds > 0
+                      %>
+                      <%= time_string.join(' ') %>
+                    </span>
+                  </div>
+                  
+                  <div class="mt-3">
+                    <div class="flex items-center mb-1">
+                      <span class="text-xs text-gray-500 mr-2">Time spent:</span>
+                      <span class="text-xs text-gray-700"><%= (task.time_spent / 60.0).round(1) %> minutes</span>
+                    </div>
+                    <div class="w-full bg-gray-200 rounded-full h-2.5 mb-2">
+                      <% 
+                        # For visualization purposes - set max to 2 hours or adjust as needed
+                        max_time = 7200 # 2 hours in seconds
+                        percentage = [(task.time_spent.to_f / max_time * 100), 100].min
+                      %>
+                      <div class="bg-indigo-600 h-2.5 rounded-full" style="width: <%= percentage %>%"></div>
+                    </div>
+                  </div>
+                </div>
+              </div>
+            <% end %>
           </div>
-        <% end %>
+        </div>
+      <% end %>
 
-        <hr class="col-span-3 my-4 border-gray-200">
-
-        <% completed_tasks.each do |task| %>
-          <div id="<%= dom_id(task) %>" class="bg-gray-50 border border-gray-100 rounded-lg p-4 hover:shadow-md transition duration-300 hover:bg-gray-50">
-            <div class="flex justify-between items-start">
-              <h3 class="font-semibold text-gray-800 text-lg mb-2"><%= task.name %></h3>
-              <span class="bg-green-500 text-white text-sm font-semibold px-3 py-1 rounded flex items-center gap-1">
-                <svg xmlns="http://www.w3.org/2000/svg" class="h-4 w-4" fill="none" viewBox="0 0 24 24" stroke="currentColor">
-                  <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 8v4l3 3m6-3a9 9 0 11-18 0 9 9 0 0118 0z" />
-                </svg>
-                <% 
-                hours = task.time_spent / 3600
-                minutes = (task.time_spent % 3600) / 60
-                seconds = task.time_spent % 60
-                time_string = []
-                time_string << "#{hours}h" if hours > 0
-                time_string << "#{minutes}m" if minutes > 0
-                time_string << "#{seconds}s" if time_string.empty? || seconds > 0
-                %>
-                <%= time_string.join(' ') %>
-              </span>
-            </div>
-            <div class="mt-2 flex justify-center gap-4">
-                <%= button_to "/tasks/#{task.id}/restore", method: :patch, class: "text-blue-500 hover:text-indigo-600", data: { turbo_stream: true, turbo_confirm: "Are you sure you want to restore this task?" }, title: "Restore Task" do %>
-                <svg xmlns="http://www.w3.org/2000/svg" class="h-7 w-7" fill="none" viewBox="0 0 24 24" stroke="currentColor">
-                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M4 4v5h.582m15.356 2A8.001 8.001 0 004.582 9m0 0H9m11 11v-5h-.581m0 0a8.003 8.003 0 01-15.357-2m15.357 2H15" />
-                </svg>
-                <% end %>
-            </div>
+      <!-- Completed Tasks Section -->
+      <% if completed_tasks.any? %>
+        <div>
+          <h3 class="text-lg font-semibold text-gray-800 mb-4 flex items-center">
+            <span class="inline-block w-3 h-3 bg-green-500 rounded-full mr-2"></span>
+            Completed Tasks (<%= completed_tasks.count %>)
+          </h3>
+          
+          <div class="grid grid-cols-1 lg:grid-cols-2 gap-4">
+            <% completed_tasks.each do |task| %>
+              <div id="<%= dom_id(task) %>" class="bg-white border border-green-100 rounded-lg p-5 hover:shadow-md transition duration-300 relative overflow-hidden">
+                <div class="absolute top-0 left-0 w-1 h-full bg-green-500"></div>
+                <div class="ml-2">
+                  <div class="flex justify-between items-start mb-3">
+                    <h3 class="font-semibold text-gray-800 text-lg"><%= task.name %></h3>
+                    <span class="bg-green-100 text-green-800 text-sm font-medium px-3 py-1 rounded-full flex items-center gap-1">
+                      <svg xmlns="http://www.w3.org/2000/svg" class="h-4 w-4" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M5 13l4 4L19 7" />
+                      </svg>
+                      <% 
+                      hours = task.time_spent / 3600
+                      minutes = (task.time_spent % 3600) / 60
+                      seconds = task.time_spent % 60
+                      time_string = []
+                      time_string << "#{hours}h" if hours > 0
+                      time_string << "#{minutes}m" if minutes > 0
+                      time_string << "#{seconds}s" if time_string.empty? || seconds > 0
+                      %>
+                      <%= time_string.join(' ') %>
+                    </span>
+                  </div>
+                  
+                  <div class="mt-3">
+                    <div class="flex items-center mb-1">
+                      <span class="text-xs text-gray-500 mr-2">Time spent:</span>
+                      <span class="text-xs text-gray-700"><%= (task.time_spent / 60.0).round(1) %> minutes</span>
+                    </div>
+                    <div class="w-full bg-gray-200 rounded-full h-2.5 mb-3">
+                      <% 
+                        # For visualization purposes - set max to 2 hours or adjust as needed
+                        max_time = 7200 # 2 hours in seconds
+                        percentage = [(task.time_spent.to_f / max_time * 100), 100].min
+                      %>
+                      <div class="bg-green-600 h-2.5 rounded-full" style="width: <%= percentage %>%"></div>
+                    </div>
+                  </div>
+                  
+                  <div class="mt-2 flex justify-end">
+                    <%= button_to "/tasks/#{task.id}/restore", method: :patch, class: "text-blue-500 hover:text-indigo-600 flex items-center gap-1", data: { turbo_stream: true, turbo_confirm: "Are you sure you want to restore this task?" }, title: "Restore Task" do %>
+                      <svg xmlns="http://www.w3.org/2000/svg" class="h-5 w-5" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M4 4v5h.582m15.356 2A8.001 8.001 0 004.582 9m0 0H9m11 11v-5h-.581m0 0a8.003 8.003 0 01-15.357-2m15.357 2H15" />
+                      </svg>
+                      <span class="text-sm">Restore</span>
+                    <% end %>
+                  </div>
+                </div>
+              </div>
+            <% end %>
           </div>
-        <% end %>
-
-      </div>
+        </div>
+      <% end %>
+      
+      <% if running_tasks.empty? && completed_tasks.empty? %>
+        <div class="text-center py-10">
+          <svg xmlns="http://www.w3.org/2000/svg" class="h-16 w-16 mx-auto text-gray-300 mb-4" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 5H7a2 2 0 00-2 2v12a2 2 0 002 2h10a2 2 0 002-2V7a2 2 0 00-2-2h-2M9 5a2 2 0 002 2h2a2 2 0 002-2M9 5a2 2 0 012-2h2a2 2 0 012 2" />
+          </svg>
+          <p class="text-gray-500 text-lg">No tasks available</p>
+          <p class="text-gray-400 text-sm mt-2">Create a new task to get started</p>
+        </div>
+      <% end %>
+      
     </div>
   </div>
-
 </div>

@@ -1,12 +1,46 @@
-<div id="<%= dom_id(task) %>" class="<%= task.running ? 'bg-white' : 'bg-blue-100' %> backdrop-filter backdrop-blur-sm border outline-[#0] rounded-lg p-3 mb-2 transition-all duration-200 relative overflow-hidden">
+<div id="<%= dom_id(task) %>" class="<%= task.running ? 'bg-white' : 'bg-blue-100' %> backdrop-filter backdrop-blur-sm border outline-[#0] rounded-lg mb-2 transition-all duration-200 relative overflow-hidden">
   <% if task.color.present? %>
-    <div class="absolute top-0 right-0 w-10 h-10 transform translate-x-5 -translate-y-5 rotate-45" style="background-color: <%= task.color %>; opacity: 0.8;"></div>
+    <div class="w-full h-6 rounded-t-lg cursor-pointer" 
+         style="background-color: <%= task.color %>; opacity: 0.8;"
+         data-controller="tracker"
+         data-action="click->tracker#toggleColorDropdown"
+         data-tracker-task-id-value="<%= task.id %>">
+      <div data-tracker-target="colorDropdown" class="absolute hidden z-10 mt-6 left-1/2 transform -translate-x-1/2 p-2 bg-white rounded-lg shadow-lg border">
+        <div class="flex space-x-2">
+          <% ['#FF5733', '#33FF57', '#3357FF', '#FF33A8', '#33FFF5', 
+          '#F3FF33', '#FF8333', '#8333FF', '#33FFB5', '#FF3333'].each do |color| %>
+        <div class="w-6 h-6 rounded-full cursor-pointer hover:scale-110 transition-transform"
+             style="background-color: <%= color %>;"
+             data-action="click->tracker#selectColor"
+             data-color="<%= color %>"></div>
+          <% end %>
+        </div>
+      </div>
+    </div>
+  <% else %>
+    <div class="w-full h-6 rounded-t-lg cursor-pointer bg-gray-200"
+         data-controller="tracker"
+         data-action="click->tracker#toggleColorDropdown"
+         data-tracker-task-id-value="<%= task.id %>">
+      <div data-tracker-target="colorDropdown" class="absolute hidden z-10 mt-6 ml-2 p-2 bg-white rounded-lg shadow-lg border">
+        <div class="grid grid-cols-5 gap-2">
+          <% ['#FF5733', '#33FF57', '#3357FF', '#FF33A8', '#33FFF5', 
+              '#F3FF33', '#FF8333', '#8333FF', '#33FFB5', '#FF3333'].each do |color| %>
+            <div class="w-6 h-6 rounded-full cursor-pointer hover:scale-110 transition-transform"
+                 style="background-color: <%= color %>;"
+                 data-action="click->tracker#selectColor"
+                 data-color="<%= color %>"></div>
+          <% end %>
+        </div>
+      </div>
+    </div>
   <% end %>
-  <div class="flex flex-col">
+  <div class="flex flex-col p-3">
     <div class="flex items-center justify-between mb-1">
-      <div class="flex items-center">
-        <h3 class="font-medium text-gray-800 mr-2"><%= task.name %></h3>
-
+      <div class="flex items-center" id="task_<%= task.id %>_user_<%= task.user_id %>">
+        <h3 class="font-medium text-gray-800 mr-2">
+          <%= link_to task.name, edit_name_task_path(task), data: { turbo_stream: true } %>
+        </h3>
       </div>
     </div>
     
@@ -18,7 +52,7 @@
         </div>
       </div>
       
-      <div class="flex space-x-1 justify-center pt-3">
+      <div class="flex space-x-1 justify-center">
         <div class="w-8 h-8 flex items-center justify-center">
           <% if task.running %>
             <%= button_to stop_task_path(task), 
