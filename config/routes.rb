@@ -23,5 +23,6 @@ Rails.application.routes.draw do
     end
   end
   resources :settings
+  get "/drawings", to: "drawings#broadcast"
 
 end

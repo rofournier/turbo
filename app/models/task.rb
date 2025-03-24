@@ -1,12 +1,13 @@
 class Task < ApplicationRecord
   belongs_to :user
+  has_many :task_sessions, dependent: :destroy
 
   after_create_commit :broadcast_create_task
   after_create_commit :broadcast_scroll
 
-  scope :running, -> { where(running: true) }
   scope :completed, -> { where(completed: true) }
   scope :incomplete, -> { where(completed: false) }
+  scope :current, -> { where(running: true) }
 
   private
 
@@ -17,12 +18,6 @@ class Task < ApplicationRecord
       partial: "tasks/component/task",
       locals: { task: self }
     )
-  end
-
-  def self.cancel_running
-    running_task = Task.find_by(running: true)
-    running_task&.update(running: false)
-    running_task
   end
 
   def broadcast_scroll

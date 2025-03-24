@@ -2,9 +2,9 @@ class TasksController < ApplicationController
   before_action :cancel_running_task, only: %i[create start]
 
   def index
-    @all_tasks = current_user.tasks.order(created_at: :desc)
-    @running_tasks = current_user.tasks.incomplete.order(created_at: :desc)
-    @completed_tasks = current_user.tasks.completed.order(created_at: :desc)
+    @all_tasks = current_user.tasks.includes(:task_sessions).order(created_at: :desc)
+    @running_tasks = current_user.tasks.includes(:task_sessions).incomplete.order(created_at: :desc)
+    @completed_tasks = current_user.tasks.includes(:task_sessions).completed.order(created_at: :desc)
   end
 
   def edit
@@ -17,11 +17,11 @@ class TasksController < ApplicationController
 
   def create
     @task = Task.new(create_params)
-    @task.last_started_at = Time.current
     colour = "000000"
     @task.color = "##{colour}"
     @task.user = current_user
     @task.save!
+    @task_session = TaskSession.create(task: @task, started_at: Time.current)
   end
 
   def update
@@ -36,14 +36,16 @@ class TasksController < ApplicationController
 
   def start
     @task = Task.find(params[:id])
+    @task_session = TaskSession.create(task: @task, started_at: Time.current)
     @task.update(running: true, last_started_at: Time.current)
   end
 
   def stop
     @task = Task.find(params[:id])
-    time_spent = @task.time_spent + (Time.current - @task.last_started_at).to_i
-    @task.update(time_spent: time_spent)
-    @task.update(running: false)
+    @ts = @task.task_sessions.current.first
+    @ts.update(ended_at: Time.current, running: false)
+    time_spent = @task.time_spent + @ts.time_spent
+    @task.update(running: false, time_spent: time_spent)
   end
 
   def complete
@@ -66,18 +68,17 @@ class TasksController < ApplicationController
     # Get current week's date range (Monday to Sunday)
     start_date = Date.current.beginning_of_week
     end_date = Date.current.end_of_week
-    
-    # Filter tasks by current week
-    @all_tasks = current_user.tasks.where(created_at: start_date..end_date).order(created_at: :desc)
-    @running_tasks = current_user.tasks.incomplete.where(created_at: start_date..end_date).order(created_at: :desc)
-    @completed_tasks = current_user.tasks.completed.where(created_at: start_date..end_date).order(created_at: :desc)
-  
+
+    # Filter tasks by current week and include task sessions
+    @all_tasks = current_user.tasks.includes(:task_sessions).where(created_at: start_date..end_date).order(created_at: :desc)
+    @running_tasks = current_user.tasks.includes(:task_sessions).incomplete.where(created_at: start_date..end_date).order(created_at: :desc)
+    @completed_tasks = current_user.tasks.includes(:task_sessions).completed.where(created_at: start_date..end_date).order(created_at: :desc)
   end
 
   def edit_name
     @task = Task.find(params[:id])
   end
-  
+
 
   private
 
@@ -94,9 +95,10 @@ class TasksController < ApplicationController
   end
 
   def cancel_running_task
-    return if Task.find_by(running: true) == nil
-    @running_task = Task.cancel_running
-    time_spent = @running_task.time_spent + (Time.current - @running_task.last_started_at).to_i
-    @running_task.update(time_spent: time_spent)
+    @running_task = Task.current.first
+    if @running_task.present?
+      @running_task&.update(running: false)
+      @running_task&.task_sessions.current.first.update(ended_at: Time.current, running: false) if @running_task&.task_sessions.current.present?
+    end
   end
 end
